@@ -13,22 +13,45 @@ import (
 	"unsafe"
 )
 
+type SvmType int
+type KernelType int
+
+const (
+	C_SVC       = SvmType(C.C_SVC)
+	NU_SVC      = SvmType(C.NU_SVC)
+	ONE_CLASS   = SvmType(C.ONE_CLASS)
+	EPSILON_SVR = SvmType(C.EPSILON_SVR)
+	NU_SVR      = SvmType(C.NU_SVR)
+
+	LINEAR      = KernelType(C.LINEAR)
+	POLY        = KernelType(C.POLY)
+	RBF         = KernelType(C.RBF)
+	SIGMOID     = KernelType(C.SIGMOID)
+	PRECOMPUTED = KernelType(C.PRECOMPUTED)
+)
+
+// SvmError wraps LIBSVM failures so they can be handled
 type SvmError struct {
 	Message string
 }
 
+// SvmProblem is a wrapper around the svm_problem struct
 type SvmProblem struct {
 	object *C.struct_svm_problem
 }
 
+// SvmParameter is a wrapper around the svm_parameter struct
 type SvmParameter struct {
 	object *C.struct_svm_parameter
 }
 
+// SvmModel is a wrapper around the svm_model struct.
+// The intent here is to provide convenience functions in a go-like way
 type SvmModel struct {
 	object *C.struct_svm_model
 }
 
+// SvmNode is a wrapper around the svm_node struct.
 type SvmNode struct {
 	object *C.struct_svm_node
 }
