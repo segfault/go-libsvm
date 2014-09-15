@@ -86,6 +86,13 @@ func NewExample(startIndex int, data []float64) *SvmNode {
 	}
 }
 
+// Free will free memory allocated to the node's internal svm_node object(s)
+func (node *SvmNode) Free() {
+	C.free(unsafe.Pointer(node.object))
+	node.length = 0
+	node.object = nil
+}
+
 // Train a model for the given problem using the provided parameters.
 // Will return a model or an error
 func Train(prob SvmProblem, param SvmParameter) (*SvmModel, error) {
