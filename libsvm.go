@@ -5,6 +5,12 @@ package libsvm
 #cgo LDFLAGS: -lsvm -lm
 #include <svm.h>
 #include <stdlib.h>
+
+const struct svm_node TERMINATOR = (struct svm_node) { -1, 0.0 };
+
+static void model_free(struct svm_model *model) {
+	svm_free_and_destroy_model(&model);
+}
 */
 import "C"
 
@@ -54,11 +60,30 @@ type SvmModel struct {
 // SvmNode is a wrapper around the svm_node struct.
 type SvmNode struct {
 	object *C.struct_svm_node
+	length int
 }
 
 // Version will return the libsvm version
 func Version() int {
 	return int(C.libsvm_version)
+}
+
+func NewExample(startIndex int, data []float64) *SvmNode {
+	sidx := startIndex
+	res := make([]C.struct_svm_node, len(data)+1)
+
+	for i, v := range data {
+		res[i].index = C.int(sidx + i)
+		res[i].value = C.double(v)
+	}
+
+	res[len(data)].index = -1
+	res[len(data)].value = 0
+
+	return &SvmNode{
+		object: &res[0],
+		length: len(data),
+	}
 }
 
 // Train a model for the given problem using the provided parameters.
@@ -98,7 +123,7 @@ func FreeModel(mdl *SvmModel) error {
 		return SvmError{Message: "model object's internal svm_model pointer is nil when attempting to free an svm model"}
 	}
 
-	C.svm_free_model_content(mdl.object)
+	C.model_free(mdl.object)
 	return nil
 }
 
