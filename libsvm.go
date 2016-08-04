@@ -2,7 +2,9 @@
 package libsvm
 
 /*
+#cgo darwin CFLAGS: -I/usr/local/include
 #cgo LDFLAGS: -lsvm -lm
+#cgo darwin LDFLAGS: -lsvm -lm -L/usr/local/lib
 #include <svm.h>
 #include <stdlib.h>
 
